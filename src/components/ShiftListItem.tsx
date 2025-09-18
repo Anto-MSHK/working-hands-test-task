@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Shift } from '../types';
+import CompanyAvatar from './CompanyAvatar';
 
 interface ShiftListItemProps {
   shift: Shift;
@@ -9,24 +9,6 @@ interface ShiftListItemProps {
 }
 
 const ShiftListItem: React.FC<ShiftListItemProps> = ({ shift, onPress }) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [useFallbackImage, setUseFallbackImage] = useState(false);
-
-  const getLogoUrl = () => {
-    if (!shift.logo) return null;
-
-    try {
-      const cleanUrl = shift.logo.replace(/\s+/g, '');
-      return cleanUrl;
-    } catch (error) {
-      console.error('Error processing URL:', error);
-      return shift.logo;
-    }
-  };
-
-  const logoUrl = getLogoUrl();
-
   const handlePress = () => {
     onPress?.(shift);
   };
@@ -101,55 +83,12 @@ const ShiftListItem: React.FC<ShiftListItemProps> = ({ shift, onPress }) => {
       activeOpacity={0.7}
     >
       <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          {!imageError && !useFallbackImage && logoUrl ? (
-            <Image
-              source={{ uri: logoUrl }}
-              style={styles.logo}
-              resizeMode="cover"
-              onLoadStart={() => setImageLoading(true)}
-              onLoadEnd={() => setImageLoading(false)}
-              onError={error => {
-                console.error('Image load error:', error);
-                setImageError(true);
-                setImageLoading(false);
-                setTimeout(() => {
-                  setUseFallbackImage(true);
-                  setImageError(false);
-                }, 100);
-              }}
-            />
-          ) : useFallbackImage && !imageError && logoUrl ? (
-            <FastImage
-              source={{
-                uri: logoUrl,
-                priority: FastImage.priority.high,
-                cache: FastImage.cacheControl.immutable,
-              }}
-              style={styles.logo}
-              resizeMode={FastImage.resizeMode.cover}
-              onLoadStart={() => setImageLoading(true)}
-              onLoadEnd={() => setImageLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
-            />
-          ) : (
-            <View style={styles.logoFallback}>
-              <Text style={styles.logoFallbackText}>
-                {shift.companyName
-                  ? shift.companyName.charAt(0).toUpperCase()
-                  : '?'}
-              </Text>
-            </View>
-          )}
-          {imageLoading && !imageError && (
-            <View style={styles.logoLoading}>
-              <Text style={styles.logoLoadingText}>...</Text>
-            </View>
-          )}
-        </View>
+        <CompanyAvatar
+          logoUrl={shift.logo}
+          companyName={shift.companyName || ''}
+          size={50}
+          style={styles.logoContainer}
+        />
 
         <View style={styles.headerInfo}>
           <Text style={styles.companyName} numberOfLines={1}>
@@ -213,41 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   logoContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#f5f5f5',
-    overflow: 'hidden',
     marginRight: 12,
-  },
-  logo: {
-    width: '100%',
-    height: '100%',
-  },
-  logoFallback: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#3498db',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoFallbackText: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  logoLoading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(245, 245, 245, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoLoadingText: {
-    fontSize: 16,
   },
   headerInfo: {
     flex: 1,

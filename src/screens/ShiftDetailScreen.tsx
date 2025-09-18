@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Shift } from '../types';
+import CompanyAvatar from '../components/CompanyAvatar';
 
 type RootStackParamList = {
   ShiftList: undefined;
@@ -33,7 +34,12 @@ const ShiftDetailScreen: React.FC = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.headerCard}>
         <View style={styles.companyInfo}>
-          <Image source={{ uri: shift.logo }} style={styles.companyLogo} />
+          <CompanyAvatar
+            logoUrl={shift.logo}
+            companyName={shift.companyName}
+            size={60}
+            borderRadius={8}
+          />
           <View style={styles.companyDetails}>
             <Text style={styles.companyName}>{shift.companyName}</Text>
             <Text style={styles.shiftId}>ID: {shift.id}</Text>
@@ -164,13 +170,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  companyLogo: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 16,
-  },
   companyDetails: {
+    marginLeft: 16,
     flex: 1,
   },
   companyName: {
