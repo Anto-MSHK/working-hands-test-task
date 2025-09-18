@@ -1,97 +1,230 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Working Hands - Приложение для поиска подработки
 
-# Getting Started
+**Working Hands** - это мобильное приложение на React Native, разработанное для поиска доступных смен подработки на основе геолокации пользователя.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Описание приложения
 
-## Step 1: Start Metro
+Приложение позволяет пользователям:
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Находить доступные смены подработки в их текущем местоположении
+- Просматривать детальную информацию о каждой смене
+- Получать актуальные данные о вакансиях через API
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Техническое задание
 
-```sh
-# Using npm
+Это приложение было создано в рамках выполнения тестового задания с следующими требованиями:
+
+### Функциональные требования
+
+1. ✅ При первом запуске запросить точную геолокацию пользователя
+2. ✅ Получить список смен в городе, передав координаты пользователя в запрос
+3. ✅ Отобразить список смен с краткой информацией
+4. ✅ По нажатию на элемент списка открыть экран с подробными данными смены
+5. ✅ Данные для экрана деталей берутся из ранее полученного списка (без повторного запроса)
+
+### Технические требования
+
+- ✅ React Native CLI (без Expo)
+- ✅ Навигация между экранами
+- ✅ Управление состоянием приложения
+- ✅ Оптимизированная верстка
+- ✅ Работа с API
+
+## Архитектура приложения
+
+### Технологический стек
+
+- **React Native 0.81.4** - основной фреймворк
+- **Redux Toolkit 2.9.0** - управление состоянием
+- **React Navigation 7.x** - навигация между экранами
+- **TypeScript** - типизация кода
+- **Axios** - HTTP-клиент для API запросов
+
+### Структура проекта
+
+```
+src/
+├── api/                    # API сервисы
+├── components/             # Переиспользуемые компоненты
+│   ├── ShiftListItem.tsx  # Элемент списка смен
+│   └── index.ts
+├── hooks/                  # Кастомные хуки
+│   ├── useGeolocation.ts  # Хук для работы с геолокацией
+│   └── index.ts
+├── navigation/             # Настройка навигации
+│   ├── AppNavigator.tsx   # Главный навигатор
+│   └── index.ts
+├── screens/                # Экраны приложения
+│   ├── LocationPermissionScreen.tsx  # Экран разрешения геолокации
+│   ├── ShiftListScreen.tsx          # Список смен
+│   ├── ShiftDetailScreen.tsx        # Детали смены
+│   └── index.ts
+├── store/                  # Redux store
+│   ├── shiftsSlice.ts     # Slice для работы со сменами
+│   └── store.ts           # Конфигурация store
+├── types/                  # TypeScript типы
+│   └── index.ts
+└── utils/                  # Утилиты
+    ├── geolocationService.ts  # Сервис геолокации
+    └── index.ts
+```
+
+## Экраны приложения
+
+### 1. Экран разрешения геолокации (LocationPermissionScreen)
+
+- Запрашивает разрешение на использование геолокации
+- Обрабатывает различные состояния разрешений
+- Показывает соответствующие сообщения пользователю
+- Автоматически переходит к списку смен при получении координат
+
+### 2. Экран списка смен (ShiftListScreen)
+
+- Отображает список доступных смен рядом с пользователем
+- Поддерживает обновление списка жестом "потянуть для обновления"
+- Показывает количество доступных смен
+- Оптимизирован для производительности с помощью FlatList
+
+### 3. Экран деталей смены (ShiftDetailScreen)
+
+- Показывает детальную информацию о выбранной смене
+- Включает все данные из API: компанию, адрес, время, оплату, рейтинг
+- Структурированное отображение информации в карточках
+
+## Управление состоянием
+
+Приложение использует **Redux Toolkit** для управления состоянием:
+
+### ShiftsSlice
+
+- `data` - массив смен
+- `loading` - состояние загрузки
+- `error` - сообщение об ошибке
+- `selectedShift` - выбранная смена
+
+### Действия (Actions)
+
+- `fetchShifts` - загрузка списка смен по координатам
+- `clearError` - очистка ошибок
+
+## API интеграция
+
+Приложение работает с API **HandsWork**:
+
+### Эндпоинт
+
+```
+GET https://mobile.handswork.pro/api/shifts/map-list-unauthorized
+```
+
+### Параметры запроса
+
+- `latitude` - широта пользователя
+- `longitude` - долгота пользователя
+
+### Данные смены
+
+API возвращает объекты смен со следующими полями:
+
+- `logo` - логотип работодателя
+- `address` - адрес проведения смены
+- `companyName` - название компании
+- `dateStartByCity` - дата начала
+- `timeStartByCity` - время начала
+- `timeEndByCity` - время окончания
+- `currentWorkers` - текущее количество работников
+- `planWorkers` - требуемое количество работников
+- `workTypes` - типы работ
+- `priceWorker` - базовая оплата
+- `bonusPriceWorker` - бонусная оплата
+- `customerFeedbacksCount` - количество отзывов
+- `customerRating` - рейтинг работодателя
+
+## Установка и запуск
+
+### Предварительные требования
+
+- Node.js (>= 20)
+- React Native CLI
+- Android Studio или Xcode
+- Java Development Kit (JDK)
+
+### Установка зависимостей
+
+```bash
+# Установка npm зависимостей
+npm install
+
+```
+
+### Запуск приложения
+
+#### Android
+
+```bash
+# Запуск Metro bundler
 npm start
 
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+# В отдельном терминале - запуск Android приложения
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+#### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+```bash
+# Запуск Metro bundler
+npm start
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# В отдельном терминале - запуск iOS приложения
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Дополнительные команды
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+# Очистка кеша
+npm run clean
 
-## Step 3: Modify your app
+# Запуск тестов
+npm test
 
-Now that you have successfully run the app, let's make changes!
+# Линтинг кода
+npm run lint
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Конфигурация
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Разрешения Android
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+Приложение запрашивает следующие разрешения в `android/app/src/main/AndroidManifest.xml`:
 
-## Congratulations! :tada:
+- `ACCESS_FINE_LOCATION` - точная геолокация
+- `ACCESS_COARSE_LOCATION` - приблизительная геолокация
 
-You've successfully run and modified your React Native App. :partying_face:
+### Настройки iOS
 
-### Now what?
+В `ios/working_hands/Info.plist` добавлено описание использования геолокации:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- `NSLocationWhenInUseUsageDescription` - описание использования локации
 
-# Troubleshooting
+## UI/UX особенности
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### Дизайн
 
-# Learn More
+- Современный Material Design подход
+- Адаптивная верстка для разных размеров экранов
+- Кастомные тени и скругления для карточек
+- Интуитивная навигация
 
-To learn more about React Native, take a look at the following resources:
+### Производительность
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Оптимизация FlatList с помощью `getItemLayout`
+- Мемоизация callback функций
+- Lazy loading компонентов
+- Оптимизация изображений с помощью react-native-fast-image
+
+### Обработка ошибок
+
+- Graceful обработка ошибок геолокации
+- Уведомления пользователя о проблемах с сетью
+- Возможность повторных попыток загрузки
