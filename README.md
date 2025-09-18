@@ -34,11 +34,10 @@
 
 ### Технологический стек
 
-- **React Native 0.81.4** - основной фреймворк
-- **Redux Toolkit 2.9.0** - управление состоянием
-- **React Navigation 7.x** - навигация между экранами
-- **TypeScript** - типизация кода
-- **Axios** - HTTP-клиент для API запросов
+- **React Native**
+- **Redux Toolkit**
+- **React Navigation**
+- **TypeScript**
 
 ### Структура проекта
 
