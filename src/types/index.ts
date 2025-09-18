@@ -1,6 +1,20 @@
+export interface Coordinates {
+  longitude: number;
+  latitude: number;
+}
+
+export interface WorkType {
+  id: number;
+  name: string;
+  nameGt5: string;
+  nameLt5: string;
+  nameOne: string;
+}
+
 export interface Shift {
   id: string;
   logo: string;
+  coordinates: Coordinates;
   address: string;
   companyName: string;
   dateStartByCity: string;
@@ -8,10 +22,17 @@ export interface Shift {
   timeEndByCity: string;
   currentWorkers: number;
   planWorkers: number;
-  workTypes: { name: string }[];
+  workTypes: WorkType[];
   priceWorker: number;
-  customerFeedbacksCount: number;
-  customerRating: number;
+  bonusPriceWorker: number;
+  customerFeedbacksCount: string;
+  customerRating: number | null;
+  isPromotionEnabled: boolean;
+}
+
+export interface ApiResponse {
+  data: Shift[];
+  status: number;
 }
 
 export interface ShiftsState {

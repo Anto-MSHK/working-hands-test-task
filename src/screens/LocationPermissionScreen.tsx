@@ -9,18 +9,18 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { RootStackParamList } from '../navigation';
 
-interface LocationPermissionScreenProps {
-  onPermissionGranted: (coordinates: {
-    latitude: number;
-    longitude: number;
-  }) => void;
-}
+type LocationPermissionScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'LocationPermission'
+>;
 
-export const LocationPermissionScreen: React.FC<
-  LocationPermissionScreenProps
-> = ({ onPermissionGranted }) => {
+export const LocationPermissionScreen: React.FC = () => {
+  const navigation = useNavigation<LocationPermissionScreenNavigationProp>();
   const {
     coordinates,
     loading,
@@ -34,9 +34,10 @@ export const LocationPermissionScreen: React.FC<
 
   useEffect(() => {
     if (coordinates) {
-      onPermissionGranted(coordinates);
+      // Navigate to ShiftList screen once we have coordinates
+      navigation.replace('ShiftList');
     }
-  }, [coordinates, onPermissionGranted]);
+  }, [coordinates, navigation]);
 
   useEffect(() => {
     if (permissionStatus === 'granted' && !coordinates && !loading) {
