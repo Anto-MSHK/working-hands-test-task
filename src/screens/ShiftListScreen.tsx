@@ -8,14 +8,27 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useAppSelector, useAppDispatch } from '../store/store';
 import { fetchShifts, clearError } from '../store/shiftsSlice';
 import { geolocationService } from '../utils/geolocationService';
 import { Shift } from '../types';
 import ShiftListItem from '../components/ShiftListItem';
 
+type RootStackParamList = {
+  ShiftList: undefined;
+  ShiftDetail: { shift: Shift };
+};
+
+type ShiftListScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'ShiftList'
+>;
+
 const ShiftListScreen: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<ShiftListScreenNavigationProp>();
   const {
     data: shifts,
     loading,
@@ -60,12 +73,13 @@ const ShiftListScreen: React.FC = () => {
     loadShifts(false);
   }, [loadShifts]);
 
-  const handleShiftPress = useCallback((shift: Shift) => {
-    console.log('Selected shift:', shift.id);
-    Alert.alert('Shift Selected', `You selected ${shift.companyName}.`, [
-      { text: 'OK' },
-    ]);
-  }, []);
+  const handleShiftPress = useCallback(
+    (shift: Shift) => {
+      console.log('Selected shift:', shift.id);
+      navigation.navigate('ShiftDetail', { shift });
+    },
+    [navigation],
+  );
 
   const renderShiftItem = useCallback(
     ({ item }: { item: Shift }) => (

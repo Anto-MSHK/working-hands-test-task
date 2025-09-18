@@ -1,11 +1,17 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { LocationPermissionScreen, ShiftListScreen } from '../screens';
+import {
+  LocationPermissionScreen,
+  ShiftListScreen,
+  ShiftDetailScreen,
+} from '../screens';
+import { Shift } from '../types';
 
 export type RootStackParamList = {
   LocationPermission: undefined;
   ShiftList: undefined;
+  ShiftDetail: { shift: Shift };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -40,6 +46,13 @@ const AppNavigator: React.FC = () => {
             title: 'Available Shifts',
             headerLeft: () => null,
             gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="ShiftDetail"
+          component={ShiftDetailScreen}
+          options={{
+            title: 'Shift Details',
           }}
         />
       </Stack.Navigator>
